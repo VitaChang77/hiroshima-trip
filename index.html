@@ -2,367 +2,269 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>廣島親子吃貨之旅 2026</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>職場媽媽的戰利品清單</title>
     <style>
-        body { font-family: 'Noto Sans JP', sans-serif; background-color: #f8fafc; color: #334155; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .card-shadow { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); }
-        .btn-nav { transition: all 0.2s; }
-        .btn-nav.active { color: #ea580c; font-weight: 700; }
+        :root {
+            --primary: #d68080; /* 溫柔的乾燥玫瑰粉 */
+            --bg: #fdfbf7;
+            --text: #4a4a4a;
+            --card-bg: #ffffff;
+            --success: #81c784;
+        }
+
+        body {
+            font-family: '微軟正黑體', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 20px;
+        }
+
+        /* 進度條 */
+        .progress-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* 分類標題 */
+        .category-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 20px 0 10px 5px;
+            border-left: 5px solid var(--primary);
+            padding-left: 10px;
+        }
+
+        /* 清單卡片 */
+        .item-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .item-card:active {
+            transform: scale(0.98);
+        }
+
+        .item-info {
+            flex-grow: 1;
+        }
+
+        .item-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: block;
+        }
+
+        .item-note {
+            font-size: 0.85rem;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        /* Checkbox樣式 */
+        .checkbox-custom {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 15px;
+            transition: all 0.3s;
+        }
+
+        /* 已完成狀態 */
+        .completed .item-name {
+            text-decoration: line-through;
+            color: #bbb;
+        }
         
-        /* 標籤配色 */
-        .tag-transport { background-color: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
-        .tag-food { background-color: #ffedd5; color: #9a3412; border: 1px solid #fdba74; }
-        .tag-spot { background-color: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
-        .tag-warn { background-color: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
-        
-        /* 路線細節 */
-        .route-detail { font-size: 0.8rem; color: #64748b; margin-top: 4px; padding-left: 8px; border-left: 2px solid #cbd5e1; }
+        .completed .checkbox-custom {
+            background-color: var(--success);
+            border-color: var(--success);
+        }
+
+        .completed .checkbox-custom::after {
+            content: '✓';
+            color: white;
+            font-weight: bold;
+        }
+
+        .reset-btn {
+            display: block;
+            margin: 40px auto;
+            padding: 10px 20px;
+            background-color: #eee;
+            border: none;
+            border-radius: 20px;
+            color: #666;
+            cursor: pointer;
+        }
+
     </style>
 </head>
-<body x-data="appData()" x-init="initWeather()" class="bg-slate-50 h-screen flex flex-col overflow-hidden">
+<body>
 
-    <header class="bg-white px-5 py-3 shadow-sm z-20 flex-none border-b border-gray-100">
-        <div class="flex justify-between items-center">
-            <div>
-                <h1 class="text-xl font-bold text-slate-800 tracking-tight">廣島親子吃貨行 👨‍👩‍👧‍👦</h1>
-                <p class="text-xs text-slate-500">2026/02/08 - 02/12</p>
-            </div>
-            <div class="text-right bg-blue-50 px-3 py-1 rounded-lg">
-                <div class="text-sm font-bold text-blue-700" x-text="currentWeather.temp + '°C'">--°C</div>
-                <div class="text-xs text-blue-500" x-text="currentWeather.desc">廣島市</div>
-            </div>
-        </div>
-    </header>
+    <div class="container">
+        <h1>🛍️ 媽媽的放風清單</h1>
+        <p class="subtitle">忙碌中也要記得愛自己 (進度自動儲存)</p>
 
-    <main class="flex-1 overflow-y-auto no-scrollbar p-4 pb-28 relative">
-        
-        <div x-show="activeTab === 'itinerary'">
-            
-            <div class="flex space-x-2 overflow-x-auto pb-2 no-scrollbar mb-4 sticky top-0 z-10 bg-slate-50/95 backdrop-blur py-2">
-                <template x-for="(day, index) in itinerary" :key="index">
-                    <button @click="activeDay = index" 
-                        :class="{'bg-slate-800 text-white shadow-md transform scale-105': activeDay === index, 'bg-white text-slate-500 border border-slate-200': activeDay !== index}"
-                        class="px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all">
-                        <span x-text="day.shortDate"></span>
-                    </button>
-                </template>
-            </div>
-
-            <div x-show="activeDay === 3" class="mb-4 bg-white p-2 rounded-xl shadow-sm border border-slate-200 flex">
-                <button @click="planMode = 'snow'" :class="{'bg-blue-500 text-white': planMode === 'snow', 'text-slate-500': planMode !== 'snow'}" class="flex-1 py-2 rounded-lg text-sm font-bold transition-colors">❄️ 玩雪模式</button>
-                <button @click="planMode = 'rain'" :class="{'bg-amber-500 text-white': planMode === 'rain', 'text-slate-500': planMode !== 'rain'}" class="flex-1 py-2 rounded-lg text-sm font-bold transition-colors">☔ 雨天備案</button>
-            </div>
-
-            <div class="space-y-6">
-                <h2 class="text-lg font-bold text-slate-700 ml-1" x-text="itinerary[activeDay].fullDate"></h2>
-
-                <template x-for="(item, index) in getCurrentEvents()" :key="activeDay + '-' + planMode + '-' + index">
-                    <div class="bg-white rounded-2xl p-4 card-shadow border border-slate-100 relative">
-                        <div class="flex justify-between items-start mb-2">
-                            <div class="flex items-center space-x-2">
-                                <span class="text-sm font-mono font-bold text-slate-400" x-text="item.time"></span>
-                                <span class="px-2 py-0.5 rounded text-xs font-bold" :class="getTypeBadge(item.type)" x-text="item.typeLabel"></span>
-                            </div>
-                            <a :href="'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(item.query)" target="_blank" 
-                               class="bg-slate-50 text-slate-400 hover:bg-blue-50 hover:text-blue-600 rounded-full p-2 transition border border-slate-100">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                            </a>
-                        </div>
-                        
-                        <h3 class="text-lg font-bold text-slate-800 mb-1 leading-tight" x-text="item.title"></h3>
-                        <p class="text-sm text-slate-600 mb-2" x-text="item.desc"></p>
-
-                        <div x-show="item.transportDetail" class="route-detail mb-3">
-                            <span class="font-bold text-slate-500">🚇 交通 Tips:</span>
-                            <span x-text="item.transportDetail"></span>
-                        </div>
-
-                        <div x-show="item.food" class="bg-orange-50 rounded-xl p-3 mb-3 border border-orange-100">
-                            <div class="flex items-center mb-1 text-orange-800 font-bold text-sm">
-                                <span class="mr-1">🍽️</span> 爸媽必吃推薦
-                            </div>
-                            <div class="font-bold text-slate-800" x-text="item.food?.name"></div>
-                            <div class="text-xs text-slate-600 mt-1" x-text="item.food?.desc"></div>
-                            <div x-show="item.food?.tip" class="text-xs text-orange-600 mt-1 font-medium bg-orange-100 inline-block px-1 rounded mt-1">
-                                Tips: <span x-text="item.food?.tip"></span>
-                            </div>
-                        </div>
-
-                        <div class="flex flex-wrap gap-2">
-                            <template x-for="tag in item.tags">
-                                <span class="text-xs px-2.5 py-1 rounded-md font-bold shadow-sm" 
-                                    :class="{
-                                        'tag-food': tag.type === 'eat',
-                                        'tag-spot': tag.type === 'spot',
-                                        'tag-transport': tag.type === 'transport',
-                                        'tag-warn': tag.type === 'warn',
-                                        'bg-slate-100 text-slate-500': tag.type === 'normal'
-                                    }" x-text="tag.text"></span>
-                            </template>
-                        </div>
-                    </div>
-                </template>
-            </div>
-            
-            <div class="h-10"></div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
         </div>
 
-        <div x-show="activeTab === 'checklist'" class="space-y-6">
-            <h2 class="text-xl font-bold text-slate-800 mb-4">🎒 出發前確認清單</h2>
-            <template x-for="(group, gIndex) in checklist" :key="gIndex">
-                <div class="bg-white rounded-xl p-4 card-shadow">
-                    <h3 class="font-bold text-slate-700 mb-3 border-b border-slate-100 pb-2 flex items-center">
-                        <span x-text="group.icon" class="mr-2 text-lg"></span>
-                        <span x-text="group.title"></span>
-                    </h3>
-                    <div class="space-y-3">
-                        <template x-for="(item, iIndex) in group.items" :key="iIndex">
-                            <label class="flex items-start space-x-3 p-1 active:bg-slate-50 rounded cursor-pointer">
-                                <input type="checkbox" class="w-5 h-5 rounded text-blue-600 focus:ring-blue-500 mt-0.5 border-gray-300" x-model="item.checked">
-                                <div>
-                                    <div class="text-sm font-medium text-slate-800" :class="{'opacity-50 line-through': item.checked}" x-text="item.name"></div>
-                                    <div class="text-xs text-slate-500" x-text="item.desc" x-show="item.desc"></div>
-                                </div>
-                            </label>
-                        </template>
-                    </div>
-                </div>
-            </template>
-        </div>
-
-        <div x-show="activeTab === 'tools'" class="space-y-4">
-             <div class="bg-white rounded-xl p-5 card-shadow border-l-4 border-indigo-500">
-                <h3 class="font-bold text-lg mb-2 text-indigo-900">🏨 住宿資訊</h3>
-                <p class="font-bold text-slate-800">Hotel Granvia Hiroshima South Gate</p>
-                <p class="text-sm text-slate-500">廣島車站直結 (南口/新幹線口)</p>
-                <div class="mt-3 flex space-x-2">
-                    <a href="https://maps.app.goo.gl/GranviaHiroshima" target="_blank" class="flex-1 bg-indigo-50 text-indigo-700 text-center py-2 rounded-lg text-sm font-bold">打開地圖</a>
-                </div>
+        <div id="listContent">
             </div>
 
-            <div class="bg-white rounded-xl p-5 card-shadow">
-                <h3 class="font-bold text-lg mb-2 text-slate-800">🚕 交通小幫手</h3>
-                <p class="text-sm text-slate-600 mb-2">給計程車司機看的：</p>
-                <div class="bg-slate-100 p-3 rounded-lg text-sm font-mono mb-2">
-                    「下瀬美術館までお願いします。」<br>
-                    (請載我去下瀨美術館)
-                </div>
-                <div class="bg-slate-100 p-3 rounded-lg text-sm font-mono">
-                    「広島駅の新幹線口までお願いします。」<br>
-                    (請載我去廣島站新幹線口)
-                </div>
-            </div>
-
-            <div class="bg-red-50 rounded-xl p-5 border border-red-100">
-                <h3 class="font-bold text-red-800 mb-2">🆘 緊急聯絡</h3>
-                <div class="grid grid-cols-2 gap-4 text-sm">
-                    <div><span class="block text-red-400 text-xs">報警</span><span class="font-mono font-bold text-xl text-red-700">110</span></div>
-                    <div><span class="block text-red-400 text-xs">救護車</span><span class="font-mono font-bold text-xl text-red-700">119</span></div>
-                    <div class="col-span-2 border-t border-red-100 pt-2">
-                        <span class="block text-red-400 text-xs">駐大阪辦事處</span>
-                        <a href="tel:+81662278623" class="font-mono font-bold text-red-700">+81-6-6227-8623</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <nav class="bg-white border-t border-slate-200 flex-none pb-safe z-30">
-        <div class="flex justify-around items-center h-16">
-            <button @click="activeTab = 'itinerary'" class="btn-nav flex flex-col items-center justify-center w-full h-full text-slate-400" :class="{'active': activeTab === 'itinerary'}">
-                <span class="text-2xl mb-0.5">🗓️</span><span class="text-xs">行程</span>
-            </button>
-            <button @click="activeTab = 'checklist'" class="btn-nav flex flex-col items-center justify-center w-full h-full text-slate-400" :class="{'active': activeTab === 'checklist'}">
-                <span class="text-2xl mb-0.5">🎒</span><span class="text-xs">清單</span>
-            </button>
-            <button @click="activeTab = 'tools'" class="btn-nav flex flex-col items-center justify-center w-full h-full text-slate-400" :class="{'active': activeTab === 'tools'}">
-                <span class="text-2xl mb-0.5">🧰</span><span class="text-xs">工具</span>
-            </button>
-        </div>
-    </nav>
+        <button class="reset-btn" onclick="resetList()">重置清單 (全部清除)</button>
+    </div>
 
     <script>
-        function appData() {
-            return {
-                activeTab: 'itinerary',
-                activeDay: 0,
-                planMode: 'rain', // D4預設
-                currentWeather: { temp: '-', desc: '廣島市' },
+        // ==========================================
+        // CONFIG: 請在這裡修改你的購物清單資料
+        // ==========================================
+        const defaultItems = [
+            // --- 類別：之前的許願清單 (假設) ---
+            { id: 1, category: "👗 之前的許願", name: "舒適好走的平底鞋", note: "上班追小孩兩相宜，要軟底的" },
+            { id: 2, category: "👗 之前的許願", name: "修身西裝褲", note: "開會要有氣勢，但腰頭要舒服" },
+            { id: 3, category: "👗 之前的許願", name: "大容量輕量托特包", note: "要能裝筆電跟小孩水壺" },
 
-                checklist: [
-                    {
-                        title: "必備證件與支付", icon: "🛂",
-                        items: [
-                            { name: "護照", desc: "效期需6個月以上", checked: false },
-                            { name: "VJW QR Code", desc: "截圖存在手機", checked: false },
-                            { name: "大人手機 IC 卡", desc: "Suica/ICOCA 錢存夠了嗎?", checked: false },
-                            { name: "日幣現金", desc: "計程車/販賣機用", checked: false },
-                            { name: "信用卡", desc: "JCB/Visa", checked: false }
-                        ]
-                    },
-                    {
-                        title: "小孩專用", icon: "👶",
-                        items: [
-                            { name: "尿布 & 濕紙巾", desc: "隨身包", checked: false },
-                            { name: "安撫零食", desc: "米餅、果凍", checked: false },
-                            { name: "兒童口罩", desc: "備用", checked: false },
-                            { name: "水壺", desc: "隨時補水", checked: false }
-                        ]
-                    },
-                    {
-                        title: "衣物與雜項", icon: "🧥",
-                        items: [
-                            { name: "防風外套", desc: "洋蔥式穿法", checked: false },
-                            { name: "手套/毛帽", desc: "玩雪用", checked: false },
-                            { name: "備用襪子", desc: "以防弄濕", checked: false },
-                            { name: "折疊傘", desc: "雨天備用", checked: false }
-                        ]
-                    }
-                ],
+            // --- 類別：資深同事推薦 (科技業媽媽必備) ---
+            { id: 4, category: "💻 同事推薦好物", name: "降噪耳機", note: "辦公室太吵或小孩太吵時的救贖" },
+            { id: 5, category: "💻 同事推薦好物", name: "人體工學滑鼠 (垂直滑鼠)", note: "預防媽媽手跟滑鼠手" },
+            { id: 6, category: "💻 同事推薦好物", name: "掃地機器人/洗地機", note: "你的時間該拿來追劇，不是掃地" },
 
-                itinerary: [
-                    {
-                        shortDate: 'D1 (日)', fullDate: 'Day 1: 抵達 & 裝備 (2/8)',
-                        events: [
-                            { 
-                                time: '10:15', type: 'transport', typeLabel: '交通', title: '抵達廣島機場', desc: '出關後去搭利木津巴士。', query: 'Hiroshima Airport Limousine Bus', tags: [{text:'直達', type:'transport'}],
-                                transportDetail: '往「廣島車站新幹線口」方向 (車程50分)。下車就是飯店。'
-                            },
-                            { 
-                                time: '12:30', type: 'food', typeLabel: '午餐', title: 'ekie 廣島燒', desc: '飯店樓下ekie 1F。', query: 'Rei-chan Hiroshima', tags: [{text:'排隊名店', type:'food'}],
-                                food: { name: '麗ちゃん (Rei-chan)', desc: '經典廣島燒', tip: '若排隊太長，可外帶回房間吃！' }
-                            },
-                            { 
-                                time: '14:00', type: 'spot', typeLabel: '景點', title: 'Pokémon Center', desc: 'ekie 2F (就在樓上)。', query: 'Pokemon Center Hiroshima Ekie', tags: [{text:'紅色暴鯉龍', type:'spot'}] 
-                            },
-                            { 
-                                time: '15:30', type: 'spot', typeLabel: '購物', title: 'Montbell (Sunmall)', desc: '幫弟弟買雪靴手套。', query: 'Montbell Hiroshima Kamiyacho', tags: [{text:'必買裝備', type:'warn'}],
-                                transportDetail: '搭路面電車(1/2/6號)至「紙屋町東」站。走路3分進本通商店街 Sunmall 1F。'
-                            },
-                            { 
-                                time: '18:00', type: 'food', typeLabel: '晚餐', title: '牡蠣土手鍋', desc: 'ekie 1F Dining區。', query: 'Kanawa Ekie', tags: [{text:'廣島必吃', type:'food'}],
-                                food: { name: 'Kanawa (かなわ)', desc: '生食級牡蠣 & 土手鍋', tip: '味噌鍋煮熟的牡蠣拌飯，小孩超愛！' }
-                            }
-                        ]
-                    },
-                    {
-                        shortDate: 'D2 (一)', fullDate: 'Day 2: 宮島 & 鹿 (2/9)',
-                        events: [
-                            { 
-                                time: '09:30', type: 'transport', typeLabel: 'JR', title: '前往宮島口', desc: '搭 JR 山陽本線 (往岩國方向)。', query: 'Miyajimaguchi Station', tags: [{text:'刷手機IC卡', type:'transport'}],
-                                transportDetail: '車程28分。出站跟著人群走去渡輪口。'
-                            },
-                            { 
-                                time: '10:10', type: 'food', typeLabel: '必買', title: '上野星鰻便當', desc: '宮島口車站旁排隊老店。', query: 'Anagomeshi Ueno', tags: [{text:'日本第一便當', type:'food'}],
-                                food: { name: 'あなごめし うえの', desc: '便當 (Bento)', tip: '不要排內用！買便當去宮島海邊野餐。' }
-                            },
-                            { 
-                                time: '10:30', type: 'transport', typeLabel: '船', title: 'JR 宮島渡輪', desc: '選 JR 的船！會繞去大鳥居前面。', query: 'Miyajima Ferry Terminal', tags: [{text:'大鳥居航線', type:'spot'}] 
-                            },
-                            { 
-                                time: '12:00', type: 'food', typeLabel: '午餐', title: '宮島牡蠣屋', desc: '商店街中段。', query: 'Yakigaki no Hayashi', tags: [{text:'烤牡蠣發源地', type:'food'}],
-                                food: { name: '焼がきのはやし', desc: '烤牡蠣/牡蠣飯', tip: '店面大，適合親子。' }
-                            },
-                            { 
-                                time: '13:30', type: 'spot', typeLabel: '放電', title: '宮島水族館', desc: '嚴島神社再往後走。', query: 'Miyajima Public Aquarium', tags: [{text:'企鵝互動', type:'spot'}] 
-                            },
-                            { 
-                                time: '15:30', type: 'food', typeLabel: '點心', title: '炸紅葉饅頭', desc: '商店街「紅葉堂」。', query: 'Momijido', tags: [{text:'像雞蛋糕', type:'food'}],
-                                food: { name: '揚げもみじ', desc: '炸紅葉饅頭', tip: '必吃剛炸好的！起司口味不錯。' }
-                            }
-                        ]
-                    },
-                    {
-                        shortDate: 'D3 (二)', fullDate: 'Day 3: 美術館 & 公園 (2/10)',
-                        events: [
-                            { 
-                                time: '10:00', type: 'transport', typeLabel: 'JR', title: '前往大竹站', desc: 'JR 山陽本線 (往岩國方向)。', query: 'Otake Station', tags: [{text:'約45分', type:'transport'}],
-                                transportDetail: '在「大竹站 (Otake)」下車。'
-                            },
-                            { 
-                                time: '11:00', type: 'transport', typeLabel: 'TAXI', title: '搭計程車', desc: '出站搭計程車直達美術館。', query: 'Simose Art Museum', tags: [{text:'約1500円', type:'transport'}],
-                                transportDetail: '跟司機說「Simose Art Museum」。約10分鐘。'
-                            },
-                            { 
-                                time: '11:15', type: 'spot', typeLabel: '景點', title: '下瀨美術館', desc: '彩色漂浮貨櫃，像走迷宮。', query: 'Simose Art Museum', tags: [{text:'超好拍', type:'spot'}] 
-                            },
-                            { 
-                                time: '13:30', type: 'spot', typeLabel: '放電', title: '晴海臨海公園', desc: '就在美術館隔壁。', query: 'Harumi Seaside Park Otake', tags: [{text:'超大遊具', type:'spot'}],
-                                transportDetail: '走路過去即達。有大型溜滑梯和幼兒專區。'
-                            },
-                            { 
-                                time: '17:30', type: 'food', typeLabel: '晚餐', title: '醉心 (Suishin)', desc: '回廣島市區本通吃。', query: 'Suishin Honten', tags: [{text:'廣島鄉土料理', type:'food'}],
-                                food: { name: '酔心 (Suishin)', desc: '牡蠣釜飯', tip: '有寬敞座位/榻榻米，帶小孩非常友善。' }
-                            }
-                        ]
-                    },
-                    {
-                        shortDate: 'D4 (三)', fullDate: 'Day 4: 玩雪 or 玩Mall (2/11)',
-                        events: [] // 動態載入
-                    },
-                    {
-                        shortDate: 'D5 (四)', fullDate: 'Day 5: 回家 (2/12)',
-                        events: [
-                            { 
-                                time: '09:00', type: 'transport', typeLabel: '巴士', title: '前往機場', desc: '新幹線口利木津巴士。', query: 'Hiroshima Station Shinkansen Entrance', tags: [{text:'檢查護照', type:'warn'}] 
-                            },
-                            { 
-                                time: '11:15', type: 'transport', typeLabel: '飛機', title: 'CI113 返台', desc: '滿載回憶回家囉！', query: 'Hiroshima Airport', tags: [] 
-                            }
-                        ]
-                    },
-                    {
-                        time: 'Takeout', type: 'food', typeLabel: '隨時', title: '八天堂 / 安徒生', desc: '安撫小孩神器。', query: 'Hattendo Ekie', tags: [{text:'點心', type:'food'}],
-                        food: { name: '八天堂奶油麵包', desc: '冰冰涼涼', tip: '買幾個放飯店冰箱當早餐或宵夜。' }
-                    }
-                ],
+            // --- 類別：給自己 (Self Care) ---
+            { id: 7, category: "💆‍♀️ 寵愛自己", name: "高級護手霜", note: "辦公室冷氣房很乾" },
+            { id: 8, category: "💆‍♀️ 寵愛自己", name: "好喝的濾掛咖啡/茶包", note: "下午三點的續命丹" },
+            
+            // --- 類別：給小孩 (任務) ---
+            { id: 9, category: "👶 順便買小孩的", name: "學校備用文具", note: "永遠會消失的橡皮擦跟尺" },
+        ];
 
-                d4_plans: {
-                    snow: [
-                        { time: '07:45', type: 'transport', typeLabel: '集合', title: '滑雪巴士集合', desc: '廣島站新幹線口 (飯店樓下)。', query: 'Hiroshima Station Shinkansen Exit', tags: [{text:'準時!', type:'warn'}], transportDetail: '憑Email上車，車程約2小時。' },
-                        { time: '10:00', type: 'spot', typeLabel: '玩雪', title: '瑞穗高原', desc: 'Gondola 上山頂玩雪。', query: 'Mizuho Highland', tags: [{text:'手套戴好', type:'spot'}] },
-                        { time: '12:00', type: 'food', typeLabel: '午餐', title: '雪場食堂', desc: '簡單吃咖哩飯/拉麵。', query: 'Mizuho Highland Restaurant', tags: [] },
-                        { time: '18:00', type: 'food', typeLabel: '晚餐', title: '敘敘苑 (慶功宴)', desc: 'Ekie 廣島店 / 福屋八丁堀店', query: 'Jojoen Hiroshima', tags: [{text:'高級燒肉', type:'food'}], food: { name: '敘敘苑 (Jojoen)', desc: '日式燒肉', tip: '玩雪累了一天，吃頓好的犒賞自己！' } }
-                    ],
-                    rain: [
-                        { time: '10:30', type: 'transport', typeLabel: 'JR', title: 'Aeon Mall 府中', desc: '搭JR一站到「天神川」站。', query: 'Aeon Mall Hiroshima Fuchu', tags: [{text:'最強雨備', type:'spot'}], transportDetail: '走路5分鐘即達。' },
-                        { time: '11:00', type: 'spot', typeLabel: '姊姊', title: 'VS PARK', desc: '室內運動綜藝場。', query: 'VS PARK Aeon Mall', tags: [{text:'猛獸賽跑', type:'spot'}] },
-                        { time: '11:00', type: 'spot', typeLabel: '弟弟', title: 'Kid\'s Republic', desc: '3F 免費遊戲區 & 玩具反斗城。', query: 'Toys R Us Aeon Mall Hiroshima', tags: [{text:'爸媽輪流逛', type:'spot'}] },
-                        { time: '12:30', type: 'food', typeLabel: '午餐', title: '美食街', desc: '選擇多，有兒童座椅。', query: 'Aeon Mall Hiroshima Fuchu', tags: [] }
-                    ]
-                },
+        // ==========================================
+        // 系統邏輯 (就像 ERP 的 Logic 層)
+        // ==========================================
+        
+        const STORAGE_KEY = 'mom_shopping_list_v1';
+        let items = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultItems;
 
-                getCurrentEvents() {
-                    if (this.activeDay === 3) return this.d4_plans[this.planMode];
-                    return this.itinerary[this.activeDay].events;
-                },
+        // 渲染畫面
+        function renderList() {
+            const container = document.getElementById('listContent');
+            container.innerHTML = '';
 
-                getTypeBadge(type) {
-                    if (type === 'transport') return 'tag-transport';
-                    if (type === 'food') return 'tag-food';
-                    if (type === 'spot') return 'tag-spot';
-                    return 'bg-slate-100 text-slate-800';
-                },
+            // 依類別分組
+            const grouped = items.reduce((acc, item) => {
+                (acc[item.category] = acc[item.category] || []).push(item);
+                return acc;
+            }, {});
 
-                async initWeather() {
-                    try {
-                        const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=34.3853&longitude=132.4553&current_weather=true');
-                        const data = await res.json();
-                        this.currentWeather = { temp: data.current_weather.temperature, desc: '廣島市' };
-                    } catch (e) { console.log(e); }
-                }
+            // 產生 HTML
+            for (const [category, groupItems] of Object.entries(grouped)) {
+                // 加入標題
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'category-title';
+                titleDiv.textContent = category;
+                container.appendChild(titleDiv);
+
+                // 加入項目
+                groupItems.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = `item-card ${item.checked ? 'completed' : ''}`;
+                    card.onclick = () => toggleItem(item.id);
+
+                    card.innerHTML = `
+                        <div class="item-info">
+                            <span class="item-name">${item.name}</span>
+                            ${item.note ? `<div class="item-note">${item.note}</div>` : ''}
+                        </div>
+                        <div class="checkbox-custom"></div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+
+            updateProgress();
+        }
+
+        // 切換勾選狀態
+        function toggleItem(id) {
+            const item = items.find(i => i.id === id);
+            if (item) {
+                item.checked = !item.checked;
+                saveData();
+                renderList();
             }
         }
+
+        // 更新進度條
+        function updateProgress() {
+            const total = items.length;
+            const checked = items.filter(i => i.checked).length;
+            const percent = (checked / total) * 100;
+            document.getElementById('progressBar').style.width = `${percent}%`;
+        }
+
+        // 儲存到 LocalStorage (瀏覽器記憶體)
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+        }
+
+        // 重置
+        function resetList() {
+            if(confirm('確定要全部清空重來嗎？')) {
+                items = JSON.parse(JSON.stringify(defaultItems)); // Deep copy
+                items.forEach(i => i.checked = false);
+                saveData();
+                renderList();
+            }
+        }
+
+        // 初始化
+        renderList();
+
     </script>
 </body>
 </html>
