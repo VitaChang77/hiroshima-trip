@@ -16,13 +16,13 @@
         .btn-nav { transition: all 0.2s; }
         .btn-nav.active { color: #ea580c; font-weight: 700; }
         
-        /* 標籤樣式 */
+        /* 標籤配色 */
         .tag-transport { background-color: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
         .tag-food { background-color: #ffedd5; color: #9a3412; border: 1px solid #fdba74; }
         .tag-spot { background-color: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
         .tag-warn { background-color: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
         
-        /* 路線細節文字 */
+        /* 路線細節 */
         .route-detail { font-size: 0.8rem; color: #64748b; margin-top: 4px; padding-left: 8px; border-left: 2px solid #cbd5e1; }
     </style>
 </head>
@@ -63,7 +63,7 @@
             <div class="space-y-6">
                 <h2 class="text-lg font-bold text-slate-700 ml-1" x-text="itinerary[activeDay].fullDate"></h2>
 
-                <template x-for="item in getCurrentEvents()" :key="item.time">
+                <template x-for="(item, index) in getCurrentEvents()" :key="activeDay + '-' + planMode + '-' + index">
                     <div class="bg-white rounded-2xl p-4 card-shadow border border-slate-100 relative">
                         <div class="flex justify-between items-start mb-2">
                             <div class="flex items-center space-x-2">
@@ -113,6 +113,7 @@
                     </div>
                 </template>
             </div>
+            
             <div class="h-10"></div>
         </div>
 
@@ -195,8 +196,8 @@
             return {
                 activeTab: 'itinerary',
                 activeDay: 0,
-                planMode: 'rain', // D4預設雨備
-                currentWeather: { temp: '6', desc: '預測' },
+                planMode: 'rain', // D4預設
+                currentWeather: { temp: '-', desc: '廣島市' },
 
                 checklist: [
                     {
@@ -330,7 +331,8 @@
                     snow: [
                         { time: '07:45', type: 'transport', typeLabel: '集合', title: '滑雪巴士集合', desc: '廣島站新幹線口 (飯店樓下)。', query: 'Hiroshima Station Shinkansen Exit', tags: [{text:'準時!', type:'warn'}], transportDetail: '憑Email上車，車程約2小時。' },
                         { time: '10:00', type: 'spot', typeLabel: '玩雪', title: '瑞穗高原', desc: 'Gondola 上山頂玩雪。', query: 'Mizuho Highland', tags: [{text:'手套戴好', type:'spot'}] },
-                        { time: '12:00', type: 'food', typeLabel: '午餐', title: '雪場食堂', desc: '簡單吃咖哩飯/拉麵。', query: 'Mizuho Highland Restaurant', tags: [] }
+                        { time: '12:00', type: 'food', typeLabel: '午餐', title: '雪場食堂', desc: '簡單吃咖哩飯/拉麵。', query: 'Mizuho Highland Restaurant', tags: [] },
+                        { time: '18:00', type: 'food', typeLabel: '晚餐', title: '敘敘苑 (慶功宴)', desc: 'Ekie 廣島店 / 福屋八丁堀店', query: 'Jojoen Hiroshima', tags: [{text:'高級燒肉', type:'food'}], food: { name: '敘敘苑 (Jojoen)', desc: '日式燒肉', tip: '玩雪累了一天，吃頓好的犒賞自己！' } }
                     ],
                     rain: [
                         { time: '10:30', type: 'transport', typeLabel: 'JR', title: 'Aeon Mall 府中', desc: '搭JR一站到「天神川」站。', query: 'Aeon Mall Hiroshima Fuchu', tags: [{text:'最強雨備', type:'spot'}], transportDetail: '走路5分鐘即達。' },
